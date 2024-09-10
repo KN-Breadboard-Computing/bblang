@@ -3,6 +3,7 @@
 **Preflex** is a tool for generating **flex** and **bison** files for generating **grammar parser**.
  based on custom-defined grammar rules. This tool allows for fast and efficient code generation, enabling you to focus on your project without getting bogged down by syntax parsing details.
 Result of parsing is **abstract syntax trees (AST)**, which can be used for further processing. Target language is **C++**.
+
 ---
 
 ## Features
