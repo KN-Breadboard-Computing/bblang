@@ -62,6 +62,7 @@ std::unique_ptr<ast::ProgramNode> parse(const char* file_path) {{
 
 
 def get_bison_filename(input_file_name: str) -> str:
+    input_file_name = input_file_name.split('/')[-1]
     if '.' in input_file_name:
         return input_file_name.split('.')[0] + '.y'
     else:

@@ -232,7 +232,7 @@ def generate_clone_print_enum_instructions(class_data: Dict[str, List[str] or st
             clone_args_preparation += f"  {ca_type} new_{ca_name} = {ca_name}_ ? dynamic_cast<{ca_type}>({ca_name}_->clone().release()) : nullptr;\n"
             clone_args.append(f"std::move(new_{ca_name})")
             print_instructions += f"  if ({ca_name}_) {{\n"
-            print_instructions += f"    {ca_name}_->print(out, tab + 2);\n    out << std::endl;\n"
+            print_instructions += f"    {ca_name}_->print(out, tab + 2);\n"
             print_instructions += f"  }}\n"
             print_instructions += f"  else {{\n"
             print_instructions += f"    out << std::string(tab + 2, ' ') << \"nullptr\" << std::endl;\n"
