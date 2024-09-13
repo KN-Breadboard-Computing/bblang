@@ -40,6 +40,7 @@ int yywrap(void) {{
 
 
 def get_flex_filename(input_file_name: str) -> str:
+    input_file_name = input_file_name.split('/')[-1]
     if '.' in input_file_name:
         return input_file_name.split('.')[0] + '.l'
     else:
