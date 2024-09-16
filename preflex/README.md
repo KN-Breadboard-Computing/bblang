@@ -37,7 +37,8 @@ Grammar rules are defined after the `%%` marker in a **Bison-like** format. Donâ
 
 ### Comments
 - Use `%SingleLineCommentBegin` to define the beginning of a single-line comment.
-- Use `%MultiLineCommentBegin` and `%MultiLineCommentEnd` markers to define the style for multi-line comments.
+- Use `%MultiLineCommentBegin` and `%MultiLineCommentEnd` markers to define the style for multi-line comments. 
+End marker should be two distinct characters. 
 
 ### Note
 You need to define the classes representing your regex patterns in the generated code.
