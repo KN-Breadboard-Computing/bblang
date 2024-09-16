@@ -1,7 +1,7 @@
 ## Preflex
 
 **Preflex** is a tool for generating **flex** and **bison** files for generating **grammar parser**.
- based on custom-defined grammar rules. This tool allows for fast and efficient code generation, enabling you to focus on your project without getting bogged down by syntax parsing details.
+based on custom-defined grammar rules. This tool allows for fast and efficient code generation, enabling you to focus on your project without getting bogged down by syntax parsing details.
 Result of parsing is **abstract syntax trees (AST)**, which can be used for further processing. Target language is **C++**.
 
 ---
@@ -38,6 +38,7 @@ Grammar rules are defined after the `%%` marker in a **Bison-like** format. Donâ
 ### Comments
 - Use `%SingleLineCommentBegin` to define the beginning of a single-line comment.
 - Use `%MultiLineCommentBegin` and `%MultiLineCommentEnd` markers to define the style for multi-line comments.
+  End marker should be two distinct characters.
 
 ### Note
 You need to define the classes representing your regex patterns in the generated code.
@@ -53,9 +54,9 @@ python preflex/preflex.py <grammar description> <parser target directory> <ast h
 
 ---
 
-## Example 
-For a basic example of how to use Preflex to create custom calculator, check out the `example-sketch` and `example-result` branches of this repository. 
-Branch `example-sketch` contains a simple grammar description before Preflex code generation, 
+## Example
+For a basic example of how to use Preflex to create custom calculator, check out the `example-sketch` and `example-result` branches of this repository.
+Branch `example-sketch` contains a simple grammar description before Preflex code generation,
 while branch `example-result` contains the generated and corrected code to calculate simple arithmetic expressions.
 
 #### Run Preflex on `example-sketch` branch

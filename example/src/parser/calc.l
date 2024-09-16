@@ -1,7 +1,5 @@
 %{
 #define NO_YY_WRAP
-#define YY_NO_UNPUT
-#define YY_NO_INPUT
 
 #include "calc_parser.hpp"
 
@@ -9,12 +7,13 @@
 #include <string>
 
 size_t linesCounter = 1;
-%}
+void eatComment();
 
+%}
 %%
 
 "//".*  { linesCounter++; }        
-
+"/*"  { eatComment(); }
 
 "result is"  { return LITERAL_RESULT_IS; }
 "-"  { return TOKEN_MINUS; }
@@ -31,6 +30,20 @@ size_t linesCounter = 1;
 .  { std::cerr << "Error:  illegal character " << yytext[0] << " at line " << linesCounter << std::endl; }
 
 %%
+void eatComment() {
+  int c;
+  while ((c = yyinput()) != 0) {
+    if (c == '\n') {
+      ++linesCounter;
+    }
+    else if (c == '*') {
+      if ((c = yyinput()) == '/') {
+        break;
+      }
+      unput(c);
+    }
+  }
+}
 
 int yywrap(void) {
     return 1;

@@ -352,8 +352,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 10
-#define YY_END_OF_BUFFER 11
+#define YY_NUM_RULES 11
+#define YY_END_OF_BUFFER 12
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -361,11 +361,11 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[25] =
+static const flex_int16_t yy_accept[26] =
     {   0,
-        0,    0,   11,    9,    7,    8,    5,    4,    3,    9,
-        6,    9,    1,    6,    0,    1,    0,    0,    0,    0,
-        0,    0,    2,    0
+        0,    0,   12,   10,    8,    9,    6,    5,    4,   10,
+        7,   10,    2,    1,    7,    0,    1,    0,    0,    0,
+        0,    0,    0,    3,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -406,36 +406,36 @@ static const YY_CHAR yy_meta[17] =
         1,    1,    1,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[26] =
+static const flex_int16_t yy_base[27] =
     {   0,
-        0,    0,   29,   30,   30,   30,   30,   30,   30,   20,
-       18,   16,    0,   16,   10,    0,    7,   10,    6,   16,
-        8,    4,   30,   30,   16
+        0,    0,   30,   31,   31,   31,   31,   31,   31,   12,
+       20,   18,   31,    0,   18,   12,    0,    9,   12,    8,
+       18,   10,    5,   31,   31,   17
     } ;
 
-static const flex_int16_t yy_def[26] =
+static const flex_int16_t yy_def[27] =
     {   0,
-       24,    1,   24,   24,   24,   24,   24,   24,   24,   24,
-       24,   24,   25,   24,   24,   25,   24,   24,   24,   24,
-       24,   24,   24,    0,   24
+       25,    1,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   26,   25,   25,   26,   25,   25,   25,
+       25,   25,   25,   25,    0,   25
     } ;
 
-static const flex_int16_t yy_nxt[47] =
+static const flex_int16_t yy_nxt[48] =
     {   0,
         4,    5,    6,    5,    7,    8,    9,   10,   11,    4,
-        4,    4,   12,    4,    4,    4,   16,   23,   22,   21,
-       20,   19,   18,   17,   14,   15,   14,   13,   24,    3,
-       24,   24,   24,   24,   24,   24,   24,   24,   24,   24,
-       24,   24,   24,   24,   24,   24
+        4,    4,   12,    4,    4,    4,   13,   17,   24,   14,
+       23,   22,   21,   20,   19,   18,   15,   16,   15,   25,
+        3,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   25,   25,   25,   25
     } ;
 
-static const flex_int16_t yy_chk[47] =
+static const flex_int16_t yy_chk[48] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,   25,   22,   21,   20,
-       19,   18,   17,   15,   14,   12,   11,   10,    3,   24,
-       24,   24,   24,   24,   24,   24,   24,   24,   24,   24,
-       24,   24,   24,   24,   24,   24
+        1,    1,    1,    1,    1,    1,   10,   26,   23,   10,
+       22,   21,   20,   19,   18,   16,   15,   12,   11,    3,
+       25,   25,   25,   25,   25,   25,   25,   25,   25,   25,
+       25,   25,   25,   25,   25,   25,   25
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -455,8 +455,6 @@ char *yytext;
 #line 1 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 #line 2 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 #define NO_YY_WRAP
-#define YY_NO_UNPUT
-#define YY_NO_INPUT
 
 #include "calc_parser.hpp"
 
@@ -464,6 +462,8 @@ char *yytext;
 #include <string>
 
 size_t linesCounter = 1;
+void eatComment();
+
 #line 467 "/home/karoljanic/Documents/bblang/example/src/parser/build/../calc_lexer.cpp"
 #line 468 "/home/karoljanic/Documents/bblang/example/src/parser/build/../calc_lexer.cpp"
 
@@ -682,7 +682,7 @@ YY_DECL
 		}
 
 	{
-#line 14 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+#line 13 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 
 
 #line 688 "/home/karoljanic/Documents/bblang/example/src/parser/build/../calc_lexer.cpp"
@@ -712,13 +712,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 25 )
+				if ( yy_current_state >= 26 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 30 );
+		while ( yy_base[yy_current_state] != 31 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -744,56 +744,61 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 16 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+#line 15 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 { linesCounter++; }        
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ return LITERAL_RESULT_IS; }
+#line 16 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ eatComment(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 20 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ return TOKEN_MINUS; }
+#line 18 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ return LITERAL_RESULT_IS; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ return TOKEN_PLUS; }
+#line 19 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ return TOKEN_MINUS; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 22 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ return TOKEN_MULTIPLY; }
+#line 20 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ return TOKEN_PLUS; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 24 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ yylval.token.numericValue = strtoull(yytext, nullptr, 10); return INTEGER; }
+#line 21 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ return TOKEN_MULTIPLY; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 27 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ }
+#line 23 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ yylval.token.numericValue = strtoull(yytext, nullptr, 10); return INTEGER; }
 	YY_BREAK
 case 8:
-/* rule 8 can match eol */
 YY_RULE_SETUP
-#line 29 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ linesCounter++; }
+#line 26 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ }
 	YY_BREAK
 case 9:
+/* rule 9 can match eol */
 YY_RULE_SETUP
-#line 31 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
-{ std::cerr << "Error:  illegal character " << yytext[0] << " at line " << linesCounter << std::endl; }
+#line 28 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ linesCounter++; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 33 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+#line 30 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+{ std::cerr << "Error:  illegal character " << yytext[0] << " at line " << linesCounter << std::endl; }
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 32 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 ECHO;
 	YY_BREAK
-#line 796 "/home/karoljanic/Documents/bblang/example/src/parser/build/../calc_lexer.cpp"
+#line 801 "/home/karoljanic/Documents/bblang/example/src/parser/build/../calc_lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1090,7 +1095,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 25 )
+			if ( yy_current_state >= 26 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1118,11 +1123,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 25 )
+		if ( yy_current_state >= 26 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 24);
+	yy_is_jam = (yy_current_state == 25);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1798,8 +1803,22 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 33 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
+#line 32 "/home/karoljanic/Documents/bblang/example/src/parser/calc.l"
 
+void eatComment() {
+  int c;
+  while ((c = yyinput()) != 0) {
+    if (c == '\n') {
+      ++linesCounter;
+    }
+    else if (c == '*') {
+      if ((c = yyinput()) == '/') {
+        break;
+      }
+      unput(c);
+    }
+  }
+}
 
 int yywrap(void) {
     return 1;
