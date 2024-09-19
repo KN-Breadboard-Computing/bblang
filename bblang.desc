@@ -1,0 +1,163 @@
+REAL                        [0-9]+\.[0-9]+
+INTEGER                     [0-9]+
+IDENTIFIER                  [a-zA-Z_][a-zA-Z0-9_]*
+
+Plus                        +
+Minus                       -
+Multiply                    *
+Divide                      /
+Mod                         %
+ShiftLeft                   <<
+ShiftRight                  >>
+BitwiseAnd                  &
+BitwiseOr                   |
+BitwiseXor                  ^
+BitwiseNot                  ~
+And                         &&
+Or                          ||
+Xor                         ^^
+Not                         !
+LessThan                    <
+LessThanEqual               <=
+GreaterThan                 >
+GreaterThanEqual            >=
+Equal                       ==
+NotEqual                    !=
+True                        true
+False                       false
+
+%SingleLineCommentBegin     //
+%MultiLineCommentBegin      /*
+%MultiLineCommentEnd        */
+
+%%
+
+program:
+    arithmetic_expression
+|
+    logic_expression
+;
+
+arithmetic_expression:
+    arithmetic_expression BitwiseOr arithmetic_expr_lvl_1
+|
+    arithmetic_expr_lvl_1
+;
+
+arithmetic_expr_lvl_1:
+    arithmetic_expr_lvl_1 BitwiseXor arithmetic_expr_lvl_2
+|
+    arithmetic_expr_lvl_2
+;
+
+arithmetic_expr_lvl_2:
+    arithmetic_expr_lvl_2 BitwiseAnd arithmetic_expr_lvl_3
+|
+    arithmetic_expr_lvl_3
+;
+
+arithmetic_expr_lvl_3:
+    arithmetic_expr_lvl_3 ShiftLeft arithmetic_expr_lvl_4
+|
+    arithmetic_expr_lvl_3 ShiftRight arithmetic_expr_lvl_4
+|
+    arithmetic_expr_lvl_4
+;
+
+arithmetic_expr_lvl_4:
+    arithmetic_expr_lvl_4 Plus arithmetic_expr_lvl_5
+|
+    arithmetic_expr_lvl_4 Minus arithmetic_expr_lvl_5
+|
+    arithmetic_expr_lvl_5
+;
+
+arithmetic_expr_lvl_5:
+    arithmetic_expr_lvl_5 Multiply arithmetic_term
+|
+    arithmetic_expr_lvl_5 Divide arithmetic_term
+|
+    arithmetic_expr_lvl_5 Mod arithmetic_term
+|
+    arithmetic_term
+;
+
+arithmetic_term:
+    Minus arithmetic_term
+|
+    BitwiseNot arithmetic_term
+|
+    "(" arithmetic_expression ")"
+|
+    l_value
+|
+    r_value
+;
+
+
+logic_expression:
+    logic_expression Or logic_expr_lvl_1
+|
+    logic_expr_lvl_1
+;
+
+logic_expr_lvl_1:
+    logic_expr_lvl_1 Xor logic_expr_lvl_2
+|
+    logic_expr_lvl_2
+;
+
+logic_expr_lvl_2:
+    logic_term And logic_term
+|
+    logic_term
+;
+
+logic_term:
+    Not logic_term
+|
+    "(" logic_expression ")"
+|
+    arithmetic_expressions_comparison
+|
+    l_value
+|
+    r_value
+;
+
+arithmetic_expressions_comparison:
+    arithmetic_expression LessThan arithmetic_expression
+|
+    arithmetic_expression LessThanEqual arithmetic_expression
+|
+    arithmetic_expression GreaterThan arithmetic_expression
+|
+    arithmetic_expression GreaterThanEqual arithmetic_expression
+|
+    arithmetic_expression Equal arithmetic_expression
+|
+    arithmetic_expression NotEqual arithmetic_expression
+;
+
+l_value:
+    IDENTIFIER
+;
+
+r_value:
+    arithmetic_constant
+|
+    logic_constant
+;
+
+arithmetic_constant:
+    INTEGER
+|
+    REAL
+;
+
+logic_constant:
+    True
+|
+    False
+;
+
