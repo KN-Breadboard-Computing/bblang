@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple
 
-from generator import special_split, get_ast_node_name, get_token_type
+from generator import special_split, get_token_type
+from naming import get_ast_node_name, get_class_filename, get_guard_name, get_kind_name
 
 class_header_file_template = \
     """#ifndef AST_{guard}
@@ -26,6 +27,8 @@ class {class_name} : public AstNode {{
     
   ~{class_name}() = default;
   
+  static bool classof(const {class_name} *node) {{ return node->getKind() == ast::Kind::{kind_name}; }}
+  
 {getters}
   void accept(class AstVisitor* visitor) const override {{ visitor->visit(this); }}
   [[nodiscard]] virtual std::unique_ptr<AstNode> clone() const override;
@@ -46,7 +49,7 @@ namespace ast {{
 {enum_print}
 [[nodiscard]] std::unique_ptr<AstNode> {class_name}::clone() const {{
 {clone_args_preparation}
-  return std::make_unique<{class_name}>({clone_args});
+  return std::make_unique<{class_name}>(getLineNumber(), {clone_args});
 }}
     
 void {class_name}::print(std::ostream& out, int tab) const {{
@@ -81,21 +84,18 @@ class AstVisitor {{
 #endif  // AST_VISITOR_HPP
 """
 
-def get_class_filename(class_name: str, extension: str) -> str:
-    filename = ""
-    for char in class_name:
-        if char.isupper():
-            filename += "_"
-        filename += char.lower()
+kind_header_file_template = \
+    """#ifndef AST_KIND_HPP
+#define AST_KIND_HPP
 
-    if filename[0] == "_":
-        filename = filename[1:]
+namespace ast {{
+enum class Kind {{
+  UNDEF,
+{kinds}
+}};
+}}  // namespace ast
 
-    return filename + "." + extension
-
-
-def get_guard(class_name: str) -> str:
-    return get_class_filename(class_name, 'hpp').upper().replace(".", "_")
+#endif  // AST_KIND_HPP"""
 
 
 def generate_constructor_args_and_headers(class_name: str, rules: List[Tuple[str, List[str]]]) -> Tuple[
@@ -147,6 +147,7 @@ def generate_constructor_args_and_headers(class_name: str, rules: List[Tuple[str
 
     return constructor_args, list(headers_set)
 
+
 def get_all_class_names(rules: List[Tuple[str, List[str]]]) -> List[str]:
     class_names = []
     for rule in rules:
@@ -161,6 +162,7 @@ def get_all_class_names(rules: List[Tuple[str, List[str]]]) -> List[str]:
                     class_names.append(get_ast_node_name(p.lower()))
 
     return list(set(class_names))
+
 
 def generate_headers_enums_fields_getters_and_constructors(class_data: Dict[str, List[str] or str],
                                                            rules: List[Tuple[str, List[str]]]) -> Tuple[
@@ -184,7 +186,8 @@ def generate_headers_enums_fields_getters_and_constructors(class_data: Dict[str,
 
     constructors = ""
     for ca_index, ca in enumerate(constructor_args):
-        constructors += f"  {class_name}({', '.join(ca)}):\n"
+        constructors += f"  {class_name}(size_t line_number, {', '.join(ca)}):\n"
+        constructors += f"    AstNode{{Kind::{get_kind_name(class_name)}, line_number}},\n"
         for na_index, na in enumerate(ca):
             constructors += f"    {na.split()[1]}_{{{na.split()[1]}}}"
             if na_index == len(ca) - 1:
@@ -201,7 +204,7 @@ def generate_headers_enums_fields_getters_and_constructors(class_data: Dict[str,
         type, name = ca.split()
         if '*' in type:
             fields += f"  std::unique_ptr<{type.replace('*', '')}> {name}_;"
-            getters += f"  const std::unique_ptr<{type.replace('*', '')}>& get{name.title().replace('_','')}() const {{ return {name}_; }}\n"
+            getters += f"  const std::unique_ptr<{type.replace('*', '')}>& get{name.title().replace('_', '')}() const {{ return {name}_; }}\n"
         else:
             fields += f"  {type} {name}_;"
             getters += f"  {type} get{name.title()}() const {{ return {name}_; }}\n"
@@ -261,7 +264,8 @@ def write_header_class_file(class_data: Dict[str, List[str] or str], rules: List
         file.write(
             class_header_file_template.format(class_name=class_data['class_name'],
                                               headers=headers,
-                                              guard=get_guard(class_data['class_name']),
+                                              guard=get_guard_name(class_data['class_name']),
+                                              kind_name=get_kind_name(class_data['class_name']),
                                               enums=enums, constructors=constructors,
                                               getters=getters, fields=fields))
 
@@ -272,11 +276,13 @@ def write_source_class_file(class_data: Dict[str, List[str] or str], rules: List
         class_data, rules)
     with open(output_file, 'w') as file:
         file.write(class_source_file_template.format(class_name=class_data['class_name'],
-                                                     file_class_name=get_class_filename(class_data['class_name'], 'hpp'),
+                                                     file_class_name=get_class_filename(class_data['class_name'],
+                                                                                        'hpp'),
                                                      enum_print=enum_print,
                                                      clone_args_preparation=clone_args_preparation,
                                                      clone_args=clone_args,
                                                      print_instructions=print_instructions))
+
 
 def write_visitor_header_file(rules: List[Tuple[str, List[str]]], output_file: str) -> None:
     class_names = get_all_class_names(rules)
@@ -288,3 +294,12 @@ def write_visitor_header_file(rules: List[Tuple[str, List[str]]], output_file: s
     with open(output_file, 'w') as file:
         file.write(visitor_header_file_template.format(visits=visits,
                                                        class_declarations=class_declarations))
+
+
+def write_kind_header_file(rules: List[Tuple[str, List[str]]], output_file: str) -> None:
+    class_names = get_all_class_names(rules)
+    kinds = ""
+    for class_name in class_names:
+        kinds += f"  {get_kind_name(class_name)},\n"
+    with open(output_file, 'w') as file:
+        file.write(kind_header_file_template.format(kinds=kinds))

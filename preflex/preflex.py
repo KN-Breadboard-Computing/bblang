@@ -3,10 +3,12 @@ import os
 
 from reader import read_description
 from generator import generate_definitions, get_single_line_comment_begin, get_multi_line_comment_begin_end
-from flex_writer import get_flex_filename, write_flex_file
-from bison_writer import get_bison_filename, write_bison_file
-from class_writer import get_class_filename, write_header_class_file, write_source_class_file, write_visitor_header_file
-from cmake_writer import get_cmake_filename, write_cmake_file
+from naming import get_flex_filename, get_bison_filename, get_class_filename, get_cmake_filename
+from flex_writer import write_flex_file
+from bison_writer import write_bison_file
+from class_writer import write_header_class_file, write_source_class_file, \
+    write_visitor_header_file, write_kind_header_file
+from cmake_writer import write_cmake_file
 
 regenerate_files = [
 
@@ -95,7 +97,14 @@ if __name__ == '__main__':
     else:
         print(f"File {visitor_file_path} exist")
 
+    kind_file_path = f"{args.ast_header_output}/ast/ast_kind.hpp"
+    if (not os.path.exists(kind_file_path)) or force or (kind_file_path in regenerate_files):
+        write_kind_header_file(rules, kind_file_path)
+    else:
+        print(f"File {kind_file_path} exist")
+
     os.system(f"cp {current_dir}/ast_node.hpp {args.ast_header_output}/ast")
+    os.system(f"cp {current_dir}/ast_node.cpp {args.ast_source_output}/ast")
 
     cmake_file_path = f"{args.parser_output}/{get_cmake_filename(args.file)}"
     if (not os.path.exists(cmake_file_path)) or force or (cmake_file_path in regenerate_files):

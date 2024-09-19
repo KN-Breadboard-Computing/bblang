@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 
+from naming import get_ast_node_name, get_enum_name, get_literal_name
 
 def special_split(string: str) -> List[str]:
     tokens = []
@@ -30,25 +31,6 @@ def get_token_type(token: str) -> str:
         return "enum"
 
 
-def get_ast_node_name(token: str) -> str:
-    class_name = ""
-    make_upper = True
-    for char in token:
-        if char == "-" or char == "_":
-            make_upper = True
-        elif make_upper:
-            class_name += char.upper()
-            make_upper = False
-        else:
-            class_name += char
-
-    return class_name + 'Node'
-
-
-def get_literal_name(token: str) -> str:
-    return 'LITERAL_' + token.replace('\"', '').upper().replace(' ', '_')
-
-
 def generate_definitions(definitions: Dict[str, str], rules: List[Tuple[str, List[str]]]) -> Tuple[
     Dict[str, str], Dict[str, Dict[str, List[str] or str]], Dict[str, str], Dict[str, str]]:
     literals = {}
@@ -70,7 +52,7 @@ def generate_definitions(definitions: Dict[str, str], rules: List[Tuple[str, Lis
         for tokens in [rule_name, *rule_tokens]:
             for token in special_split(tokens):
                 if get_token_type(token) == "enum":
-                    grammars[rule_name]['enums'].append('TOKEN_' + token.upper())
+                    grammars[rule_name]['enums'].append(get_enum_name(token))
 
     for definition in definitions:
         if definition == "%SingleLineCommentBegin" or definition == "%MultiLineCommentBegin" or definition == "%MultiLineCommentEnd":
@@ -78,7 +60,7 @@ def generate_definitions(definitions: Dict[str, str], rules: List[Tuple[str, Lis
         if get_token_type(definition) == "regex":
             regexes[definition] = definitions[definition]
         elif get_token_type(definition) == "enum":
-            enums['TOKEN_' + definition.upper()] = definitions[definition]
+            enums[get_enum_name(definition)] = definitions[definition]
 
     return literals, grammars, regexes, enums
 

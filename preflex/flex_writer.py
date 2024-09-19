@@ -53,14 +53,6 @@ int yywrap(void) {{
 """
 
 
-def get_flex_filename(input_file_name: str) -> str:
-    input_file_name = input_file_name.split('/')[-1]
-    if '.' in input_file_name:
-        return input_file_name.split('.')[0] + '.l'
-    else:
-        return input_file_name + '.l'
-
-
 def write_flex_file(literals: Dict[str, str], regexes: Dict[str, str], enums: Dict[str, str],
                     single_line_co_begin: str or None, multi_line_co_begin: str or None, multi_line_co_end: str or None,
                     output_file: str):

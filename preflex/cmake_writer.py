@@ -37,10 +37,6 @@ add_custom_target({name}_parser_generator ALL
 )"""
 
 
-def get_cmake_filename(input_file_name: str) -> str:
-    return "CMakeLists.txt"
-
-
 def write_cmake_file(input_file_name: str, output_file: str) -> None:
     with open(output_file, 'w') as file:
         if '/' in input_file_name:

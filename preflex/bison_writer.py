@@ -1,6 +1,6 @@
 from typing import Dict, List, Tuple
-from generator import get_token_type, get_ast_node_name, special_split
-from class_writer import get_class_filename
+from generator import get_token_type, special_split
+from naming import get_ast_node_name, get_enum_name, get_class_filename
 
 bison_file_template = \
     """%{{
@@ -61,14 +61,6 @@ std::unique_ptr<ast::ProgramNode> parse(const char* file_path) {{
 """
 
 
-def get_bison_filename(input_file_name: str) -> str:
-    input_file_name = input_file_name.split('/')[-1]
-    if '.' in input_file_name:
-        return input_file_name.split('.')[0] + '.y'
-    else:
-        return input_file_name + '.y'
-
-
 def translate_rule(rule: str, literals: Dict[str, str]) -> str:
     translated_tokens = []
     for token in special_split(rule):
@@ -76,7 +68,7 @@ def translate_rule(rule: str, literals: Dict[str, str]) -> str:
         if token_type == "literal":
             translated_tokens.append(literals[token])
         elif token_type == "enum":
-            translated_tokens.append("TOKEN_" + token.upper())
+            translated_tokens.append(get_enum_name(token))
         else:
             translated_tokens.append(token)
 
@@ -94,12 +86,19 @@ def generate_stack_assignment(target_rule, rule: str) -> str:
         elif token_type == "regex":
             arguments.append(f"new ast::{get_ast_node_name(token.lower())}(${index + 1})")
         elif token_type == "enum":
-            arguments.append(f"ast::{get_ast_node_name(target_rule)}::{get_ast_node_name(target_rule)}Operation::{token.upper()}")
+            enum_name = ""
+            for char in token:
+                if char.isupper():
+                    enum_name += "_"
+                enum_name += char.upper()
+            arguments.append(
+                f"ast::{get_ast_node_name(target_rule)}::{get_ast_node_name(target_rule)}Operation::{enum_name[1:]}")
 
-    return f"$$ = new ast::{get_ast_node_name(target_rule)}({', '.join(arguments)});"
+    return f"$$ = new ast::{get_ast_node_name(target_rule)}(linesCounter, {', '.join(arguments)});"
 
 
-def write_bison_file(literals: Dict[str, str], grammars: Dict[str, Dict[str, List[str] or str]], regexes: Dict[str, str],
+def write_bison_file(literals: Dict[str, str], grammars: Dict[str, Dict[str, List[str] or str]],
+                     regexes: Dict[str, str],
                      enums: Dict[str, str], rules: List[Tuple[str, List[str]]], output_file: str):
     ast_includes = ""
     tokens = ""
@@ -146,7 +145,7 @@ def write_bison_file(literals: Dict[str, str], grammars: Dict[str, Dict[str, Lis
 
         types += f"\n%type <{grammar_camel}> {grammar}"
         union_fields += f"\n\tast::{grammars[grammar]['class_name']}* {grammar_camel};"
-        ast_includes += f"    #include \"../../include/ast/{get_class_filename(grammar + 'Node', 'hpp')}\"\n"
+        ast_includes += f"    #include \"../../include/ast/{get_class_filename(grammars[grammar]['class_name'], 'hpp')}\"\n"
 
     for regex in regexes:
         ast_includes += f"    #include \"../../include/ast/{get_class_filename(regex.lower() + 'Node', 'hpp')}\"\n"
